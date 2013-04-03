@@ -1,4 +1,7 @@
 #!/usr/bin/python
+"""
+Using recursing to perform permutations and combinations on a list of items.
+"""
 
 def permute(someList, startIndex):
     if len(someList) - 1 == startIndex:
