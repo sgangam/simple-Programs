@@ -1,5 +1,6 @@
 #!/usr/bin/python
 """
+Author: Sriharsha Gangam
 Using recursing to perform permutations and combinations on a list of items.
 """
 
