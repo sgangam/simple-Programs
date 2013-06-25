@@ -29,7 +29,8 @@ def combine(someList, startIndex):
         someList.pop(startIndex)
         combine(someList, startIndex)
 
-someList = ['a', 'b', 'c', 'd']
-permute(someList, 0)
-print "************************"
-combine(someList, 0)
+if __name__ == '__main__':
+    someList = ['a', 'b', 'c', 'd']
+    permute(someList, 0)
+    print "************************"
+    combine(someList, 0)
