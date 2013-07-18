@@ -44,6 +44,7 @@ class Graph {
     // Generates a graph of vcount vertices.
     int **matrix;
     int vcount;
+    void printSearchPath(const std::unordered_map <int, int> & parent, int src, int dst) const;
     
     public:
     
@@ -101,6 +102,7 @@ void Graph::dfs (int src, int dst) const{
         int front = vstack.top();
         vstack.pop();
 
+        //found the path from src to dst.
         if (front == dst) {
             found = true;
             break;
@@ -119,8 +121,19 @@ void Graph::dfs (int src, int dst) const{
     }
     if (!found)
         std::cout << "No path from " << src << " to " << dst << std::endl;
-    else {
+    else {    
         std::cout << "Depth First Search (DFS) path from " << src << " to " << dst << std::endl;
+        printSearchPath(parent, src, dst);
+    }
+}
+
+/***
+ * Given a map of the path taken for the BFS or DFS search. This function prints this path.
+ * @param src: The vertex indicating the start of the search process
+ * @param dst: The vertex indicating the end of the search process
+***/
+
+void Graph::printSearchPath(const std::unordered_map <int, int> & parent, int src, int dst) const {
         int curr = dst;
         while (curr != src) {
             std::cout << curr << " <- ";
@@ -128,8 +141,8 @@ void Graph::dfs (int src, int dst) const{
             curr = it->second;
         }
         std::cout << curr << std::endl;
-    }
 }
+
 /***
  * Follows a breadth first search traversal. from the src vertex to the destination vertex
  * @param src: The vertex indicating the start of the search process
@@ -149,7 +162,7 @@ void Graph::bfs (int src, int dst) const {
     while (!vqueue.empty()) {
         int front = vqueue.front();
         vqueue.pop();
-
+        //found the path from src to dst.
         if (front == dst) {
             found = true;
             break;
@@ -170,15 +183,10 @@ void Graph::bfs (int src, int dst) const {
         std::cout << "No path from " << src << " to " << dst << std::endl;
     else {
         std::cout << "Breadth First Search (BFS) path from " << src << " to " << dst << std::endl;
-        int curr = dst;
-        while (curr != src) {
-            std::cout << curr << " <- ";
-            std::unordered_map<int, int>::const_iterator it = parent.find(curr);
-            curr = it->second;
-        }
-        std::cout << curr << std::endl;
+        printSearchPath(parent, src, dst);
     }
 }
+
 
 /***
  * Has different tests which compute BFS and DFS for different sources and destinations in a given graph.
