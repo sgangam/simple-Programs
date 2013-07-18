@@ -1,7 +1,8 @@
 /***
  * Author: Sriharsha Gangam
  * ------------------------
- *
+ * Breadth first search and Depth first search in a graph represented as an adjacency matrix.
+ * has a fucntion to generate and test graphs of differnt sizes.
 
  * */
 
