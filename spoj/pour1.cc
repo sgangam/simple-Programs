@@ -36,7 +36,6 @@
  * 2
  * -1
  *
- * has a fucntion to generate and test graphs of differnt sizes.
  * */
 
 #include<iostream>
@@ -51,11 +50,7 @@
 
 
 /***
- * The Graph class. stores a graph as adjacency matrix and has BFS and DFS functions.
- * @member matrix: It contains the graphs stored as an adjacency matrix
- * @member vcount: The vertex count or the maximum number of vertices in the graph. 
- * The vertices can be identified by values 0 to vcount -1. 
- * The edge from vertex i to j is given by matrix[i][j]
+  The State closs. Keeps the current value of a, b, maxa and maxb.
 ***/
 
 class State {
@@ -155,8 +150,8 @@ class KeyHash {
 
 /***
  * Given a map of the path taken for the BFS or DFS search. This function prints this path.
- * @param src: The vertex indicating the start of the search process
- * @param dst: The vertex indicating the end of the search process
+ * @param src: The State indicating the start of the search process
+ * @param dst: The State indicating the end of the search process
 ***/
 void printSearchPath(const std::tr1::unordered_map <State, State, KeyHash> & parent, State src, State dst) {
         State curr = dst;
