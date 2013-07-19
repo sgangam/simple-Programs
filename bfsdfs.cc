@@ -98,6 +98,8 @@ void Graph::dfs (int src, int dst) const{
     std::stack <int> vstack; // A stack of vertex ids.
     std::unordered_map<int, int> parent; // A path to the parent.
     vstack.push(src);
+    std::pair<int, int> mypair (src, src);
+    parent.insert(mypair);
     bool found = false;
     while (!vstack.empty()) {
         int front = vstack.top();
@@ -159,6 +161,9 @@ void Graph::bfs (int src, int dst) const {
     std::queue <int> vqueue; // A queue of vertex ids.
     std::unordered_map<int, int> parent; // A path to the parent.
     vqueue.push(src);
+    std::pair<int, int> mypair (src, src);
+    parent.insert(mypair);
+    
     bool found = false;
     while (!vqueue.empty()) {
         int front = vqueue.front();
