@@ -46,7 +46,8 @@
 #include<cassert>
 #include<cmath>
 #include<algorithm>
-#include<unordered_map>
+#include<tr1/unordered_map>
+
 
 
 /***
@@ -58,33 +59,32 @@
 ***/
 
 class State {
-        int maxa, maxb, a, b, c;
+        int maxa, maxb, a, b;
     public:
         friend std::ostream& operator<< (std::ostream &out, const State & s);
-        State(int maxa, int maxb, int c) {
+        State(int maxa, int maxb) {
             this->maxa = maxa;
             this->maxb = maxb;
-            this->c = c;
             a = b = 0;
         }
         State(const State &s) {
             this->maxa = s.maxa;
             this->maxb = s.maxb;
-            this->c = s.c;
             this->a = s.a;
             this->b = s.b;
         }
         bool operator== (const State & s) const {
-            return (this->maxa == s.maxa && this->maxb == s.maxb && this->a == s.a && this->a == s.a);
+            return (this->maxa == s.maxa && this->maxb == s.maxb && this->a == s.a && this->b == s.b);
         }
         bool operator!= (const State &s ) const {
             return !(*this == s);
         }
         std::size_t getHash() const { 
-            return (std::hash<int>()(maxa)) ^ (std::hash<int>()(maxb) << 1) ^ (std::hash<int>()(a) << 2) ^ (std::hash<int>()(b) << 3);
+            //return (std::tr1::hash<int>()(maxa)) ^ (std::tr1::hash<int>()(maxb) << 1) ^ (std::tr1::hash<int>()(a) << 2) ^ (std::tr1::hash<int>()(b) << 3);
+            return (std::tr1::hash<int>()(a) ) ^ (std::tr1::hash<int>()(b) << 1);
         }
 
-        bool endSearch() const {
+        bool endSearch(int c) const {
             if (c == a || c == b)
                 return true;
             else
@@ -138,14 +138,14 @@ std::ostream& operator<< (std::ostream & out, const State & s) {
     out << "(" << s.a << ", " << s.b <<  ")";
     return out;
 }
-
+/*
 class KeyEqual {
     public:
         bool operator()(const State& s1, const State& s2) const{
             return (s1 == s2);
         }
 };
-
+*/
 class KeyHash {
     public:
         std::size_t operator()(const State& s) const {
@@ -158,11 +158,12 @@ class KeyHash {
  * @param src: The vertex indicating the start of the search process
  * @param dst: The vertex indicating the end of the search process
 ***/
-void printSearchPath(const std::unordered_map <State, State, KeyHash, KeyEqual> & parent, State src, State dst) {
+void printSearchPath(const std::tr1::unordered_map <State, State, KeyHash> & parent, State src, State dst) {
         State curr = dst;
+        std::cout << "Start State:" << src << " End State: " << dst << std::endl;
         while (curr != src) {
             std::cout << curr << " <- ";
-            std::unordered_map<State, State, KeyHash, KeyEqual>::const_iterator it = parent.find(curr);
+            std::tr1::unordered_map<State, State, KeyHash>::const_iterator it = parent.find(curr);
             curr = it->second;
         }
         std::cout << curr << std::endl;
@@ -176,22 +177,26 @@ int pour1 (int maxa, int maxb, int c) {
     if (maxb > maxa) { //swap a and b
         maxa = maxa ^ maxb; maxb = maxa ^ maxb; maxa = maxa ^ maxb;
     }
-    if (c > maxa || (maxa == maxb && c != maxa))
+    if (c > maxa)
         return -1;
 
     std::queue <State> vqueue; // A queue of vertex ids.
-    std::unordered_map<State, State, KeyHash, KeyEqual> parentMap; // A path to the parent.
-    std::unordered_map<State, int, KeyHash, KeyEqual> stepsMap; // steps take to reach that state
-    State initState(maxa, maxb, c);
+    std::tr1::unordered_map<State, State, KeyHash> parentMap; // A path to the parent.
+    std::tr1::unordered_map<State, int, KeyHash> stepsMap; // steps take to reach that state
+
+    State initState(maxa, maxb);
     vqueue.push(initState);
-    std::pair<State, int> ipair (initState, 0);
-    stepsMap.insert(ipair);
+    std::pair<State, int> stepPair (initState, 0);
+    stepsMap.insert(stepPair);
+    std::pair<State, State> parentPair (initState, initState);
+    parentMap.insert(parentPair);
     int steps = -1;
     while (!vqueue.empty()) {
         State front = vqueue.front();
+        //std::cout << "Front of Queue is:" << front << std::endl;
         vqueue.pop();
         //found the path from src to dst.
-        if (front.endSearch()) {
+        if (front.endSearch(c)) {
             steps = stepsMap[front]; 
             //printSearchPath (parentMap, initState, front);
             break;
@@ -200,7 +205,7 @@ int pour1 (int maxa, int maxb, int c) {
         front.processNextStates(nextStateList);
         for (std::list<State>::const_iterator it = nextStateList.begin(); it != nextStateList.end(); ++it) {
             State nextState = *it;
-            std::unordered_map<State, State, KeyHash, KeyEqual>::const_iterator it = parentMap.find(nextState);
+            std::tr1::unordered_map<State, State, KeyHash>::const_iterator it = parentMap.find(nextState);
             if (it == parentMap.end()) {
                 std::pair<State, State> mypair (nextState, front);
                 parentMap.insert(mypair);
