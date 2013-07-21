@@ -56,36 +56,37 @@
 class State {
         int maxa, maxb, a, b;
     public:
-        friend std::ostream& operator<< (std::ostream &out, const State & s);
-        State(int maxa, int maxb) {
+        friend std::ostream& operator<< (std::ostream & out, const State & s);
+        inline State(int maxa, int maxb) {
             this->maxa = maxa;
             this->maxb = maxb;
             a = b = 0;
         }
-        State(const State &s) {
+        inline State(const State &s) {
             this->maxa = s.maxa;
             this->maxb = s.maxb;
             this->a = s.a;
             this->b = s.b;
         }
-        bool operator== (const State & s) const {
+        inline bool operator== (const State & s) const {
             return (this->maxa == s.maxa && this->maxb == s.maxb && this->a == s.a && this->b == s.b);
         }
-        bool operator!= (const State &s ) const {
+        inline bool operator!= (const State &s ) const {
             return !(*this == s);
         }
-        std::size_t getHash() const { 
+        inline std::size_t getHash() const { 
+            //return (std::tr1::hash<int>()(a) << 15) | (std::tr1::hash<int>()(b) );
             //return (std::tr1::hash<int>()(maxa)) ^ (std::tr1::hash<int>()(maxb) << 1) ^ (std::tr1::hash<int>()(a) << 2) ^ (std::tr1::hash<int>()(b) << 3);
-            return (std::tr1::hash<int>()(a) ) ^ (std::tr1::hash<int>()(b) << 1);
+            return (std::tr1::hash<int>()(a)) ^ (std::tr1::hash<int>()(b) << 1);
         }
 
-        bool endSearch(int c) const {
+        inline bool endSearch(int c) const {
             if (c == a || c == b)
                 return true;
             else
                 return false;
         }
-        void processNextStates (std::list<State> & nextStateList) const {
+        inline void processNextStates (std::list<State> & nextStateList) const {
             // Empty A
             if (a != 0) {
                 State s(*this);
@@ -168,44 +169,58 @@ void printSearchPath(const std::tr1::unordered_map <State, State, KeyHash> & par
  * Follows a breadth first search traversal. 
 ***/
 
+int gcd (int a, int b) {
+    if (b == 0)
+        return a;
+    else
+        return gcd(b, a % b);
+}
+
 int pour1 (int maxa, int maxb, int c) {
     if (maxb > maxa) { //swap a and b
         maxa = maxa ^ maxb; maxb = maxa ^ maxb; maxa = maxa ^ maxb;
     }
-    if (c > maxa)
+    if (c > maxa || (c % gcd(maxa, maxb) != 0))
         return -1;
+
+    State initState(maxa, maxb);
+    if (initState.endSearch(c)) 
+        return 0;
 
     std::queue <State> vqueue; // A queue of vertex ids.
     std::tr1::unordered_map<State, State, KeyHash> parentMap; // A path to the parent.
     std::tr1::unordered_map<State, int, KeyHash> stepsMap; // steps take to reach that state
 
-    State initState(maxa, maxb);
     vqueue.push(initState);
     std::pair<State, int> stepPair (initState, 0);
     stepsMap.insert(stepPair);
     std::pair<State, State> parentPair (initState, initState);
     parentMap.insert(parentPair);
     int steps = -1;
+
     while (!vqueue.empty()) {
         State front = vqueue.front();
         //std::cout << "Front of Queue is:" << front << std::endl;
         vqueue.pop();
-        //found the path from src to dst.
-        if (front.endSearch(c)) {
-            steps = stepsMap[front]; 
-            //printSearchPath (parentMap, initState, front);
-            break;
-        }
+        
         std::list <State> nextStateList;
         front.processNextStates(nextStateList);
         for (std::list<State>::const_iterator it = nextStateList.begin(); it != nextStateList.end(); ++it) {
             State nextState = *it;
+
             std::tr1::unordered_map<State, State, KeyHash>::const_iterator it = parentMap.find(nextState);
             if (it == parentMap.end()) {
                 std::pair<State, State> mypair (nextState, front);
                 parentMap.insert(mypair);
                 stepsMap[nextState] = 1 + stepsMap[front];
-                vqueue.push(nextState);
+                //found the path from src to dst.
+                if (nextState.endSearch(c)) {
+                    steps = 1 + stepsMap[front]; 
+                    //printSearchPath (parentMap, initState, nextState);
+                    return steps;
+                }
+                else
+                    vqueue.push(nextState);
             }
         }
     }
