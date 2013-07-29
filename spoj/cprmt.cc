@@ -1,7 +1,9 @@
 /***
  * Author: Sriharsha Gangam
  * ------------------------
- *  of lowercase letters, a and b, print the longest string x of lowercase letters such that there is a permutation of x that is a subsequence of a and there is a permutation of x that is a subsequence of b.
+ *
+ * Given two strings of lowercase letters, a and b, print the longest string x of lowercase letters such that there is a permutation of x that is a subsequence of a and there is a permutation of x that is a subsequence of b.
+ *
  *
  *  Input
  *
