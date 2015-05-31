@@ -71,13 +71,11 @@ class ParallelMergeSort {
             SortThread t1 = new SortThread(arr, start, mid);
             SortThread t2 = new SortThread(arr, mid + 1, end);
 
-            t1.start();
-            t2.start();
-
-            counter.incrementAndGet();
-            counter.incrementAndGet();
-            t1.join();
-            t2.join();
+            t1.start(); counter.incrementAndGet();
+            t2.start(); counter.incrementAndGet();
+            t1.join(); counter.decrementAndGet();
+            t2.join(); counter.decrementAndGet();
+            
         } else {
             sort(arr, start, mid, useThreads);
             sort(arr, mid + 1, end, useThreads);
